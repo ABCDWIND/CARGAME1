@@ -15,6 +15,7 @@
       margin: 0;
       width: 100%;
       height: 100%;
+      min-height: 100%;
       overflow: hidden;
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       touch-action: manipulation;
@@ -28,7 +29,11 @@
       position: relative;
       width: 100vw;
       height: 100vh;
+      height: 100svh;
+      height: 100dvh;
+      min-height: 100svh;
       overflow: hidden;
+      padding-bottom: env(safe-area-inset-bottom, 0px);
     }
 
     .sky-shine {
@@ -128,7 +133,8 @@
       left: 0;
       bottom: 0;
       width: 100%;
-      height: 39vh;
+      height: 34dvh;
+      min-height: 205px;
       background: #565656;
       border-top: 13px solid #329f43;
       box-shadow: inset 0 16px 0 rgba(255,255,255,0.06);
@@ -153,7 +159,7 @@
       position: absolute;
       z-index: 8;
       left: 50%;
-      bottom: 7vh;
+      bottom: calc(76px + env(safe-area-inset-bottom, 0px));
       width: min(78vw, 390px);
       height: 250px;
       transform: translateX(-50%);
@@ -401,7 +407,7 @@
       z-index: 12;
       left: 12px;
       right: 12px;
-      bottom: 12px;
+      bottom: calc(12px + env(safe-area-inset-bottom, 0px));
       display: flex;
       justify-content: space-between;
       gap: 10px;
@@ -439,8 +445,8 @@
       }
 
       .garage {
-        bottom: 8vh;
-        height: 225px;
+        bottom: calc(72px + env(safe-area-inset-bottom, 0px));
+        height: 205px;
       }
 
       .score-card { font-size: 20px; }
