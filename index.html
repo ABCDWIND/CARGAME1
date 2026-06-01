@@ -150,16 +150,24 @@
       bottom: 0;
       display: flex;
       align-items: flex-end;
-      gap: 74px;
+      gap: 46px;
       width: max-content;
-      padding-left: 100vw;
-      animation: forestMove 9.5s linear infinite;
+      padding-left: 0;
+      animation: forestMove 11s linear infinite;
       will-change: transform;
     }
 
     @keyframes forestMove {
-      from { transform: translateX(0); }
-      to { transform: translateX(-1120px); }
+      from { transform: translateX(-18%); }
+      to { transform: translateX(-68%); }
+    }
+
+    .tree-group {
+      display: flex;
+      align-items: flex-end;
+      gap: 46px;
+      flex: 0 0 auto;
+      padding-right: 46px;
     }
 
     .tree {
@@ -528,8 +536,13 @@
       }
 
       .tree-track {
-        gap: 56px;
-        animation-duration: 8.5s;
+        gap: 0;
+        animation-duration: 9.5s;
+      }
+
+      .tree-group {
+        gap: 40px;
+        padding-right: 40px;
       }
 
       .tree {
@@ -576,22 +589,42 @@
 
     <div class="tree-lane">
       <div class="tree-track" aria-hidden="true">
-        <div class="tree" style="--s:1.05"></div>
-        <div class="tree" style="--s:.78"></div>
-        <div class="tree" style="--s:1.18"></div>
-        <div class="tree" style="--s:.9"></div>
-        <div class="tree" style="--s:1.02"></div>
-        <div class="tree" style="--s:.7"></div>
-        <div class="tree" style="--s:1.22"></div>
-        <div class="tree" style="--s:.84"></div>
-        <div class="tree" style="--s:1.1"></div>
-        <div class="tree" style="--s:.76"></div>
-        <div class="tree" style="--s:1.16"></div>
-        <div class="tree" style="--s:.88"></div>
-        <div class="tree" style="--s:1.04"></div>
-        <div class="tree" style="--s:.72"></div>
-        <div class="tree" style="--s:1.2"></div>
-        <div class="tree" style="--s:.82"></div>
+        <div class="tree-group">
+          <div class="tree" style="--s:1.05"></div>
+          <div class="tree" style="--s:.78"></div>
+          <div class="tree" style="--s:1.18"></div>
+          <div class="tree" style="--s:.9"></div>
+          <div class="tree" style="--s:1.02"></div>
+          <div class="tree" style="--s:.7"></div>
+          <div class="tree" style="--s:1.22"></div>
+          <div class="tree" style="--s:.84"></div>
+          <div class="tree" style="--s:1.1"></div>
+          <div class="tree" style="--s:.76"></div>
+          <div class="tree" style="--s:1.16"></div>
+          <div class="tree" style="--s:.88"></div>
+          <div class="tree" style="--s:1.04"></div>
+          <div class="tree" style="--s:.72"></div>
+          <div class="tree" style="--s:1.2"></div>
+          <div class="tree" style="--s:.82"></div>
+        </div>
+        <div class="tree-group">
+          <div class="tree" style="--s:1.05"></div>
+          <div class="tree" style="--s:.78"></div>
+          <div class="tree" style="--s:1.18"></div>
+          <div class="tree" style="--s:.9"></div>
+          <div class="tree" style="--s:1.02"></div>
+          <div class="tree" style="--s:.7"></div>
+          <div class="tree" style="--s:1.22"></div>
+          <div class="tree" style="--s:.84"></div>
+          <div class="tree" style="--s:1.1"></div>
+          <div class="tree" style="--s:.76"></div>
+          <div class="tree" style="--s:1.16"></div>
+          <div class="tree" style="--s:.88"></div>
+          <div class="tree" style="--s:1.04"></div>
+          <div class="tree" style="--s:.72"></div>
+          <div class="tree" style="--s:1.2"></div>
+          <div class="tree" style="--s:.82"></div>
+        </div>
       </div>
     </div>
 
