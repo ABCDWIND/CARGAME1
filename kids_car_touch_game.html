@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <title>따끈따끈 자동차 놀이</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
+
+    html, body {
+      margin: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      touch-action: manipulation;
+    }
+
+    body {
+      background: linear-gradient(#83ddff 0%, #dff7ff 53%, #7bd46c 54%, #41a947 100%);
+    }
+
+    .game {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    .sky-shine {
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(circle at 82% 12%, rgba(255, 244, 112, 0.85) 0 46px, transparent 48px),
+        radial-gradient(circle at 18% 17%, rgba(255,255,255,0.45) 0 70px, transparent 72px);
+      pointer-events: none;
+    }
+
+    .cloud {
+      position: absolute;
+      width: 145px;
+      height: 52px;
+      border-radius: 999px;
+      background: white;
+      opacity: 0.92;
+      animation: cloudMove linear infinite;
+    }
+
+    .cloud::before,
+    .cloud::after {
+      content: "";
+      position: absolute;
+      background: white;
+      border-radius: 50%;
+    }
+
+    .cloud::before {
+      width: 62px;
+      height: 62px;
+      left: 22px;
+      top: -28px;
+    }
+
+    .cloud::after {
+      width: 76px;
+      height: 76px;
+      right: 18px;
+      top: -38px;
+    }
+
+    .cloud.one { top: 105px; left: -170px; animation-duration: 25s; }
+    .cloud.two { top: 180px; left: -240px; transform: scale(0.7); animation-duration: 34s; animation-delay: -13s; }
+    .cloud.three { top: 60px; left: -210px; transform: scale(0.52); animation-duration: 40s; animation-delay: -25s; }
+
+    @keyframes cloudMove {
+      from { left: -210px; }
+      to { left: calc(100vw + 220px); }
+    }
+
+    .top-ui {
+      position: absolute;
+      z-index: 10;
+      top: 14px;
+      left: 14px;
+      right: 14px;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 10px;
+      pointer-events: none;
+    }
+
+    .score-card,
+    .vehicle-card {
+      padding: 12px 16px;
+      border-radius: 24px;
+      background: rgba(255, 255, 255, 0.86);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.14);
+      font-weight: 1000;
+      color: #263238;
+      pointer-events: none;
+    }
+
+    .score-card { font-size: 23px; }
+    .vehicle-card { font-size: 19px; text-align: right; }
+
+    .message {
+      position: absolute;
+      z-index: 10;
+      top: 76px;
+      left: 14px;
+      max-width: min(360px, calc(100vw - 28px));
+      padding: 10px 15px;
+      border-radius: 21px;
+      background: rgba(255,255,255,0.78);
+      box-shadow: 0 6px 14px rgba(0,0,0,0.08);
+      font-size: 18px;
+      font-weight: 900;
+      color: #37474f;
+    }
+
+    .road {
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      width: 100%;
+      height: 39vh;
+      background: #565656;
+      border-top: 13px solid #329f43;
+      box-shadow: inset 0 16px 0 rgba(255,255,255,0.06);
+    }
+
+    .road-line {
+      position: absolute;
+      left: 0;
+      top: 45%;
+      width: 100%;
+      height: 13px;
+      background: repeating-linear-gradient(90deg, #fff 0 72px, transparent 72px 130px);
+      animation: roadSlide 0.85s linear infinite;
+    }
+
+    @keyframes roadSlide {
+      from { background-position-x: 0; }
+      to { background-position-x: -130px; }
+    }
+
+    .garage {
+      position: absolute;
+      z-index: 8;
+      left: 50%;
+      bottom: 7vh;
+      width: min(78vw, 390px);
+      height: 250px;
+      transform: translateX(-50%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      touch-action: manipulation;
+      animation: gentleDrive 4.2s ease-in-out infinite;
+    }
+
+    @keyframes gentleDrive {
+      0%, 100% { left: 36%; }
+      50% { left: 64%; }
+    }
+
+    .garage:active .vehicle {
+      transform: scale(0.92) rotate(-2deg);
+    }
+
+    .vehicle {
+      position: relative;
+      width: 290px;
+      height: 170px;
+      transform-origin: center bottom;
+      filter: drop-shadow(0 18px 8px rgba(0, 0, 0, 0.26));
+      animation: wiggle 2.2s ease-in-out infinite;
+      transition: transform 0.12s ease-out;
+    }
+
+    @keyframes wiggle {
+      0%, 100% { transform: translateY(0) rotate(0deg); }
+      50% { transform: translateY(-8px) rotate(1.2deg); }
+    }
+
+    .vehicle .top {
+      position: absolute;
+      left: 73px;
+      top: 11px;
+      width: 150px;
+      height: 72px;
+      border-radius: 42px 42px 12px 12px;
+      background: var(--car-main);
+      border: 7px solid var(--car-dark);
+    }
+
+    .vehicle .body {
+      position: absolute;
+      left: 17px;
+      top: 69px;
+      width: 255px;
+      height: 77px;
+      border-radius: 33px 44px 27px 27px;
+      background: var(--car-sub);
+      border: 7px solid var(--car-dark);
+    }
+
+    .vehicle .window {
+      position: absolute;
+      top: 25px;
+      width: 49px;
+      height: 36px;
+      border-radius: 14px;
+      background: #bdf0ff;
+      border: 5px solid #fff;
+      z-index: 2;
+    }
+
+    .vehicle .window.left { left: 88px; }
+    .vehicle .window.right { left: 148px; }
+
+    .vehicle .light {
+      position: absolute;
+      top: 93px;
+      width: 25px;
+      height: 21px;
+      border-radius: 50%;
+      background: #fff176;
+      box-shadow: 0 0 17px rgba(255, 241, 118, 0.95);
+      z-index: 3;
+    }
+
+    .vehicle .light.front { right: 16px; }
+    .vehicle .light.back { left: 20px; background: #ffcdd2; }
+
+    .vehicle .wheel {
+      position: absolute;
+      top: 122px;
+      width: 59px;
+      height: 59px;
+      border-radius: 50%;
+      background: #202020;
+      border: 10px solid #424242;
+      animation: wheelSpin 0.43s linear infinite;
+      z-index: 4;
+    }
+
+    .vehicle .wheel::after {
+      content: "";
+      position: absolute;
+      inset: 9px;
+      border-radius: 50%;
+      background: #c8c8c8;
+    }
+
+    .vehicle .wheel.left { left: 54px; }
+    .vehicle .wheel.right { right: 54px; }
+
+    @keyframes wheelSpin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    .vehicle.bus .top {
+      left: 41px;
+      top: 17px;
+      width: 210px;
+      height: 78px;
+      border-radius: 28px 28px 10px 10px;
+    }
+
+    .vehicle.bus .body {
+      left: 18px;
+      top: 60px;
+      width: 256px;
+      height: 91px;
+      border-radius: 22px;
+    }
+
+    .vehicle.bus .window.left { left: 62px; }
+    .vehicle.bus .window.right { left: 125px; }
+    .vehicle.bus .window.extra { display: block; left: 188px; }
+
+    .vehicle.truck .top {
+      left: 174px;
+      width: 84px;
+      height: 75px;
+      border-radius: 25px 30px 10px 10px;
+    }
+
+    .vehicle.truck .body {
+      left: 20px;
+      width: 245px;
+      border-radius: 18px 38px 20px 20px;
+    }
+
+    .vehicle.truck .box {
+      display: block;
+      position: absolute;
+      left: 28px;
+      top: 36px;
+      width: 145px;
+      height: 82px;
+      border-radius: 18px;
+      background: var(--car-main);
+      border: 7px solid var(--car-dark);
+      z-index: 1;
+    }
+
+    .vehicle.police .siren {
+      display: block;
+      position: absolute;
+      left: 130px;
+      top: -6px;
+      width: 42px;
+      height: 25px;
+      border-radius: 15px 15px 4px 4px;
+      background: linear-gradient(90deg, #2979ff 0 50%, #ff1744 50% 100%);
+      border: 5px solid white;
+      z-index: 6;
+      animation: sirenFlash 0.45s steps(2) infinite;
+    }
+
+    @keyframes sirenFlash {
+      0%, 100% { filter: brightness(1); }
+      50% { filter: brightness(1.8); }
+    }
+
+    .vehicle.fire .ladder {
+      display: block;
+      position: absolute;
+      left: 52px;
+      top: 12px;
+      width: 178px;
+      height: 20px;
+      border: 5px solid #ffe082;
+      border-left: none;
+      border-right: none;
+      transform: rotate(-7deg);
+      z-index: 7;
+    }
+
+    .vehicle.fire .ladder::before {
+      content: "";
+      position: absolute;
+      inset: 3px 0;
+      background: repeating-linear-gradient(90deg, #ffe082 0 8px, transparent 8px 24px);
+    }
+
+    .vehicle .extra,
+    .vehicle .box,
+    .vehicle .siren,
+    .vehicle .ladder {
+      display: none;
+    }
+
+    .pop {
+      position: absolute;
+      z-index: 20;
+      pointer-events: none;
+      font-size: 46px;
+      font-weight: 1000;
+      color: #ffeb3b;
+      text-shadow: 3px 3px 0 #f57f17, 0 4px 10px rgba(0, 0, 0, 0.28);
+      animation: popUp 0.78s ease-out forwards;
+      white-space: nowrap;
+    }
+
+    @keyframes popUp {
+      0% { transform: translate(-50%, -50%) scale(0.25) rotate(-10deg); opacity: 0; }
+      20% { opacity: 1; }
+      100% { transform: translate(-50%, -155%) scale(1.25) rotate(7deg); opacity: 0; }
+    }
+
+    .star {
+      position: absolute;
+      pointer-events: none;
+      z-index: 19;
+      width: 20px;
+      height: 20px;
+      background: var(--star-color);
+      clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 56%, 79% 91%, 50% 70%, 21% 91%, 32% 56%, 2% 35%, 39% 35%);
+      animation: starFly 0.8s ease-out forwards;
+    }
+
+    @keyframes starFly {
+      from { transform: translate(0, 0) scale(0.3); opacity: 1; }
+      to { transform: translate(var(--dx), var(--dy)) scale(1.45) rotate(210deg); opacity: 0; }
+    }
+
+    .bottom-buttons {
+      position: absolute;
+      z-index: 12;
+      left: 12px;
+      right: 12px;
+      bottom: 12px;
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      pointer-events: none;
+    }
+
+    .toy-button {
+      border: none;
+      padding: 13px 17px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.9);
+      box-shadow: 0 8px 18px rgba(0, 0, 0, 0.18);
+      font-size: 18px;
+      font-weight: 1000;
+      color: #37474f;
+      cursor: pointer;
+      pointer-events: auto;
+    }
+
+    .toy-button:active {
+      transform: scale(0.94);
+    }
+
+    .big-tap-zone {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+    }
+
+    @media (max-width: 520px) {
+      .vehicle {
+        width: 245px;
+        height: 150px;
+        transform: scale(0.92);
+      }
+
+      .garage {
+        bottom: 8vh;
+        height: 225px;
+      }
+
+      .score-card { font-size: 20px; }
+      .vehicle-card { font-size: 16px; }
+      .message { top: 72px; font-size: 16px; }
+      .pop { font-size: 39px; }
+      .toy-button { font-size: 16px; padding: 12px 14px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="game" id="game">
+    <div class="sky-shine"></div>
+    <div class="cloud one"></div>
+    <div class="cloud two"></div>
+    <div class="cloud three"></div>
+
+    <section class="top-ui">
+      <div class="score-card">⭐ <span id="score">0</span></div>
+      <div class="vehicle-card" id="vehicleName">🚗 자동차</div>
+    </section>
+
+    <div class="message" id="message">큰 자동차를 눌러봐!</div>
+
+    <div class="road">
+      <div class="road-line"></div>
+    </div>
+
+    <button class="garage" id="garage" aria-label="자동차 누르기">
+      <div class="vehicle car" id="vehicle" style="--car-main:#ff5252; --car-sub:#ff7043; --car-dark:#c62828;">
+        <div class="box"></div>
+        <div class="siren"></div>
+        <div class="ladder"></div>
+        <div class="top"></div>
+        <div class="window left"></div>
+        <div class="window right"></div>
+        <div class="window extra"></div>
+        <div class="body"></div>
+        <div class="light back"></div>
+        <div class="light front"></div>
+        <div class="wheel left"></div>
+        <div class="wheel right"></div>
+      </div>
+    </button>
+
+    <section class="bottom-buttons">
+      <button class="toy-button" id="changeButton">🚙 다른 차</button>
+      <button class="toy-button" id="resetButton">🔄 다시</button>
+    </section>
+  </main>
+
+  <script>
+    const game = document.getElementById('game');
+    const garage = document.getElementById('garage');
+    const vehicle = document.getElementById('vehicle');
+    const scoreEl = document.getElementById('score');
+    const messageEl = document.getElementById('message');
+    const vehicleNameEl = document.getElementById('vehicleName');
+    const changeButton = document.getElementById('changeButton');
+    const resetButton = document.getElementById('resetButton');
+
+    let score = 0;
+    let currentIndex = 0;
+
+    const vehicles = [
+      {
+        type: 'car',
+        name: '🚗 빨간 자동차',
+        main: '#ff5252',
+        sub: '#ff7043',
+        dark: '#c62828',
+        sound: '빵빵!',
+        freq1: 360,
+        freq2: 280
+      },
+      {
+        type: 'bus',
+        name: '🚌 노란 버스',
+        main: '#ffd54f',
+        sub: '#ffca28',
+        dark: '#f57f17',
+        sound: '빵빵!',
+        freq1: 260,
+        freq2: 210
+      },
+      {
+        type: 'police',
+        name: '🚓 경찰차',
+        main: '#ffffff',
+        sub: '#64b5f6',
+        dark: '#1565c0',
+        sound: '삐용!',
+        freq1: 520,
+        freq2: 760
+      },
+      {
+        type: 'fire',
+        name: '🚒 소방차',
+        main: '#f44336',
+        sub: '#e53935',
+        dark: '#b71c1c',
+        sound: '애앵!',
+        freq1: 440,
+        freq2: 620
+      },
+      {
+        type: 'truck',
+        name: '🚚 트럭',
+        main: '#8d6e63',
+        sub: '#a1887f',
+        dark: '#4e342e',
+        sound: '부웅!',
+        freq1: 180,
+        freq2: 130
+      }
+    ];
+
+    const messages = [
+      '잘했어! 또 눌러볼까?',
+      '우와! 별이 반짝반짝!',
+      '자동차가 신났어!',
+      '한 번 더 눌러봐!',
+      '최고야! 부릉부릉!'
+    ];
+
+    const starColors = ['#ffeb3b', '#ff80ab', '#80d8ff', '#b9f6ca', '#ffd180', '#ea80fc'];
+
+    function setVehicle(index) {
+      const item = vehicles[index];
+      vehicle.className = 'vehicle ' + item.type;
+      vehicle.style.setProperty('--car-main', item.main);
+      vehicle.style.setProperty('--car-sub', item.sub);
+      vehicle.style.setProperty('--car-dark', item.dark);
+      vehicleNameEl.textContent = item.name;
+      messageEl.textContent = item.name + '를 눌러봐!';
+    }
+
+    function playTone(item) {
+      const AudioContext = window.AudioContext || window.webkitAudioContext;
+      if (!AudioContext) return;
+
+      const ctx = new AudioContext();
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+
+      osc.type = item.type === 'truck' ? 'sawtooth' : 'square';
+      osc.frequency.setValueAtTime(item.freq1, ctx.currentTime);
+      osc.frequency.setValueAtTime(item.freq2, ctx.currentTime + 0.12);
+      osc.frequency.setValueAtTime(item.freq1, ctx.currentTime + 0.22);
+
+      gain.gain.setValueAtTime(0.16, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.34);
+
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start();
+      osc.stop(ctx.currentTime + 0.35);
+    }
+
+    function makePop(x, y, text) {
+      const pop = document.createElement('div');
+      pop.className = 'pop';
+      pop.textContent = text;
+      pop.style.left = x + 'px';
+      pop.style.top = y + 'px';
+      game.appendChild(pop);
+      setTimeout(() => pop.remove(), 850);
+    }
+
+    function makeStars(x, y) {
+      for (let i = 0; i < 16; i++) {
+        const star = document.createElement('div');
+        star.className = 'star';
+        star.style.left = x + 'px';
+        star.style.top = y + 'px';
+        star.style.setProperty('--dx', (Math.random() * 220 - 110) + 'px');
+        star.style.setProperty('--dy', (Math.random() * -185 - 25) + 'px');
+        star.style.setProperty('--star-color', starColors[Math.floor(Math.random() * starColors.length)]);
+        game.appendChild(star);
+        setTimeout(() => star.remove(), 850);
+      }
+    }
+
+    function bounceVehicle() {
+      vehicle.animate([
+        { transform: 'scale(1) rotate(0deg)' },
+        { transform: 'scale(1.18) rotate(-4deg)' },
+        { transform: 'scale(1.04) rotate(4deg)' },
+        { transform: 'scale(1) rotate(0deg)' }
+      ], {
+        duration: 380,
+        easing: 'ease-out'
+      });
+    }
+
+    function celebrate() {
+      const item = vehicles[currentIndex];
+      const rect = garage.getBoundingClientRect();
+      const x = rect.left + rect.width / 2;
+      const y = rect.top + rect.height / 2;
+
+      score += 1;
+      scoreEl.textContent = score;
+      messageEl.textContent = messages[score % messages.length];
+
+      playTone(item);
+      makePop(x, y, item.sound);
+      makeStars(x, y);
+      bounceVehicle();
+
+      if (score > 0 && score % 5 === 0) {
+        setTimeout(nextVehicle, 320);
+      }
+    }
+
+    function nextVehicle() {
+      currentIndex = (currentIndex + 1) % vehicles.length;
+      setVehicle(currentIndex);
+      const rect = garage.getBoundingClientRect();
+      makePop(rect.left + rect.width / 2, rect.top + 55, '짜잔!');
+    }
+
+    garage.addEventListener('click', celebrate);
+    changeButton.addEventListener('click', nextVehicle);
+
+    resetButton.addEventListener('click', () => {
+      score = 0;
+      scoreEl.textContent = score;
+      currentIndex = 0;
+      setVehicle(currentIndex);
+      makePop(window.innerWidth / 2, window.innerHeight / 2, '다시!');
+    });
+
+    setVehicle(currentIndex);
+  </script>
+</body>
+</html>
