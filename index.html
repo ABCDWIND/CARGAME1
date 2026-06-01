@@ -86,6 +86,105 @@
     .cloud.two { top: 180px; left: -240px; transform: scale(0.7); animation-duration: 34s; animation-delay: -13s; }
     .cloud.three { top: 60px; left: -210px; transform: scale(0.52); animation-duration: 40s; animation-delay: -25s; }
 
+    #plane-layer {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 8;
+    }
+
+    .plane {
+      position: absolute;
+      left: -150px;
+      top: 110px;
+      width: 128px;
+      height: 58px;
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      pointer-events: auto;
+      animation: planeFly 2.75s linear forwards, planeWave 0.72s ease-in-out infinite alternate;
+      will-change: transform;
+      filter: drop-shadow(0 8px 4px rgba(0,0,0,0.18));
+    }
+
+    .plane::before {
+      content: "";
+      position: absolute;
+      left: 8px;
+      top: 22px;
+      width: 92px;
+      height: 18px;
+      border-radius: 999px 45px 45px 999px;
+      background: #ffffff;
+      border: 4px solid #5fa8ff;
+    }
+
+    .plane::after {
+      content: "";
+      position: absolute;
+      right: 8px;
+      top: 18px;
+      width: 0;
+      height: 0;
+      border-top: 13px solid transparent;
+      border-bottom: 13px solid transparent;
+      border-left: 28px solid #ffffff;
+      filter: drop-shadow(3px 0 0 #5fa8ff);
+    }
+
+    .plane-wing {
+      position: absolute;
+      left: 45px;
+      top: 10px;
+      width: 44px;
+      height: 22px;
+      border-radius: 8px 24px 8px 8px;
+      background: #d9f0ff;
+      border: 4px solid #5fa8ff;
+      transform: skewX(-18deg);
+      z-index: 2;
+    }
+
+    .plane-tail {
+      position: absolute;
+      left: 2px;
+      top: 10px;
+      width: 30px;
+      height: 30px;
+      border-radius: 8px 8px 4px 18px;
+      background: #ffcf5a;
+      border: 4px solid #5fa8ff;
+      transform: rotate(-18deg);
+      z-index: 1;
+    }
+
+    .plane-window {
+      position: absolute;
+      left: 72px;
+      top: 27px;
+      width: 11px;
+      height: 11px;
+      border-radius: 50%;
+      background: #8ee7ff;
+      z-index: 3;
+      box-shadow: -18px 0 0 #8ee7ff;
+    }
+
+    .plane:active {
+      transform: scale(0.9);
+    }
+
+    @keyframes planeFly {
+      from { left: -150px; }
+      to { left: calc(100vw + 170px); }
+    }
+
+    @keyframes planeWave {
+      from { margin-top: -24px; }
+      to { margin-top: 24px; }
+    }
+
     @keyframes cloudMove {
       from { left: -220px; }
       to { left: calc(100vw + 230px); }
@@ -268,12 +367,35 @@
       will-change: transform;
     }
 
+    .jump-layer.jumping {
+      animation: bigJump 1.05s cubic-bezier(.18,.82,.22,1) both;
+    }
+
+    @keyframes bigJump {
+      0% { transform: translateY(0); }
+      18% { transform: translateY(-72px); }
+      42% { transform: translateY(-145px); }
+      65% { transform: translateY(-72px); }
+      82% { transform: translateY(0); }
+      91% { transform: translateY(-18px); }
+      100% { transform: translateY(0); }
+    }
+
     .spin-layer {
       position: relative;
       width: 290px;
       height: 170px;
       transform-origin: center center;
       will-change: transform;
+    }
+
+    .spin-layer.flipping {
+      animation: flipOneRound 1.05s ease-in-out both;
+    }
+
+    @keyframes flipOneRound {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
     }
 
     .garage:active .spin-layer {
@@ -579,6 +701,7 @@
     <div class="cloud one" aria-label="보너스 구름"></div>
     <div class="cloud two" aria-label="보너스 구름"></div>
     <div class="cloud three" aria-label="보너스 구름"></div>
+    <div id="plane-layer" aria-hidden="false"></div>
 
     <section class="top-ui">
       <div class="score-card"><span id="stars">⭐</span> <span id="score">0</span></div>
@@ -661,6 +784,7 @@
 
   <script>
     const game = document.getElementById('game');
+    const planeLayer = document.getElementById('plane-layer');
     const garage = document.getElementById('garage');
     const jumpLayer = document.getElementById('jumpLayer');
     const spinLayer = document.getElementById('spinLayer');
@@ -725,6 +849,26 @@
       osc.stop(ctx.currentTime + 0.35);
     }
 
+    function playPlaneSound() {
+      const AudioContext = window.AudioContext || window.webkitAudioContext;
+      if (!AudioContext) return;
+
+      const ctx = new AudioContext();
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(720, ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(240, ctx.currentTime + 0.42);
+      gain.gain.setValueAtTime(0.13, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.45);
+
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start();
+      osc.stop(ctx.currentTime + 0.46);
+    }
+
     function makePop(x, y, text) {
       const pop = document.createElement('div');
       pop.className = 'pop';
@@ -771,35 +915,28 @@
       if (jumping) return;
       jumping = true;
 
-      const jumpAnimation = jumpLayer.animate([
-        { transform: 'translateY(0)' },
-        { transform: 'translateY(-78px)' },
-        { transform: 'translateY(-98px)' },
-        { transform: 'translateY(-78px)' },
-        { transform: 'translateY(0)' },
-        { transform: 'translateY(-10px)' },
-        { transform: 'translateY(0)' }
-      ], {
-        duration: 980,
-        easing: 'cubic-bezier(.2,.85,.25,1)'
-      });
+      jumpLayer.classList.remove('jumping');
+      spinLayer.classList.remove('flipping');
+      void jumpLayer.offsetWidth;
+      void spinLayer.offsetWidth;
 
-      spinLayer.animate([
-        { transform: 'rotate(0deg)' },
-        { transform: 'rotate(110deg)' },
-        { transform: 'rotate(220deg)' },
-        { transform: 'rotate(360deg)' }
-      ], {
-        duration: 760,
-        easing: 'ease-in-out'
-      });
+      jumpLayer.classList.add('jumping');
+      spinLayer.classList.add('flipping');
 
       const rect = garage.getBoundingClientRect();
       makePop(rect.left + rect.width / 2, rect.top + 58, '빙글!');
 
-      jumpAnimation.onfinish = () => {
+      setTimeout(() => {
+        const landingRect = garage.getBoundingClientRect();
+        makePop(landingRect.left + landingRect.width / 2, landingRect.bottom - 58, '쿵!');
+        makeStars(landingRect.left + landingRect.width / 2, landingRect.bottom - 70);
+      }, 850);
+
+      setTimeout(() => {
+        jumpLayer.classList.remove('jumping');
+        spinLayer.classList.remove('flipping');
         jumping = false;
-      };
+      }, 1100);
     }
 
     function scheduleRandomJump() {
@@ -875,6 +1012,66 @@
       });
     }
 
+    function planeBonus(event) {
+      event.stopPropagation();
+      const plane = event.currentTarget;
+      if (plane.dataset.caught === 'yes') return;
+      plane.dataset.caught = 'yes';
+
+      const rect = plane.getBoundingClientRect();
+      const x = rect.left + rect.width / 2;
+      const y = rect.top + rect.height / 2;
+
+      score += 50;
+      updateScoreDisplay();
+      messageEl.textContent = '비행기 보너스! +50점!';
+      playPlaneSound();
+      makePop(x, y, '+50점!');
+      makeStars(x, y);
+
+      plane.style.pointerEvents = 'none';
+      plane.animate([
+        { transform: 'scale(1) rotate(0deg)', opacity: 1 },
+        { transform: 'scale(1.45) rotate(12deg)', opacity: 1 },
+        { transform: 'scale(0.15) rotate(-20deg)', opacity: 0 }
+      ], {
+        duration: 360,
+        easing: 'ease-out'
+      });
+
+      setTimeout(() => plane.remove(), 340);
+    }
+
+    function spawnPlane() {
+      const plane = document.createElement('button');
+      plane.className = 'plane';
+      plane.type = 'button';
+      plane.innerHTML = '<span class="plane-tail"></span><span class="plane-wing"></span><span class="plane-window"></span>'; 
+      plane.setAttribute('aria-label', '비행기 보너스');
+      plane.style.top = (72 + Math.random() * 130) + 'px';
+
+      plane.addEventListener('click', planeBonus);
+      plane.addEventListener('touchstart', planeBonus, { passive: true });
+
+      planeLayer.appendChild(plane);
+      setTimeout(() => plane.remove(), 2700);
+    }
+
+    function schedulePlane() {
+      const delay = 5000 + Math.random() * 5000;
+      setTimeout(() => {
+        spawnPlane();
+        schedulePlane();
+      }, delay);
+    }
+
+    function startPlanes() {
+      setTimeout(() => {
+        spawnPlane();
+        schedulePlane();
+      }, 1800);
+    }
+
     function nextVehicle() {
       currentIndex = (currentIndex + 1) % vehicles.length;
       setVehicle(currentIndex);
@@ -907,6 +1104,7 @@
     setVehicle(currentIndex);
     updateScoreDisplay();
     scheduleRandomJump();
+    startPlanes();
   </script>
 </body>
 </html>
