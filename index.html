@@ -2,7 +2,9 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <title>따끈따끈 자동차 놀이</title>
   <style>
     * {
@@ -40,7 +42,7 @@
       position: absolute;
       inset: 0;
       background:
-        radial-gradient(circle at 82% 12%, rgba(255, 244, 112, 0.85) 0 46px, transparent 48px),
+        radial-gradient(circle at 82% 12%, rgba(255, 244, 112, 0.86) 0 46px, transparent 48px),
         radial-gradient(circle at 18% 17%, rgba(255,255,255,0.45) 0 70px, transparent 72px);
       pointer-events: none;
     }
@@ -55,6 +57,7 @@
       animation: cloudMove linear infinite;
       cursor: pointer;
       pointer-events: auto;
+      z-index: 4;
     }
 
     .cloud::before,
@@ -84,14 +87,14 @@
     .cloud.three { top: 60px; left: -210px; transform: scale(0.52); animation-duration: 40s; animation-delay: -25s; }
 
     @keyframes cloudMove {
-      from { left: -210px; }
-      to { left: calc(100vw + 220px); }
+      from { left: -220px; }
+      to { left: calc(100vw + 230px); }
     }
 
     .top-ui {
       position: absolute;
-      z-index: 10;
-      top: 14px;
+      z-index: 20;
+      top: calc(14px + env(safe-area-inset-top, 0px));
       left: 14px;
       right: 14px;
       display: flex;
@@ -117,8 +120,8 @@
 
     .message {
       position: absolute;
-      z-index: 10;
-      top: 76px;
+      z-index: 20;
+      top: calc(76px + env(safe-area-inset-top, 0px));
       left: 14px;
       max-width: min(360px, calc(100vw - 28px));
       padding: 10px 15px;
@@ -133,9 +136,9 @@
     .tree-lane {
       position: absolute;
       left: 0;
-      bottom: 33dvh;
+      bottom: 32dvh;
       width: 100%;
-      height: 150px;
+      height: 175px;
       overflow: hidden;
       pointer-events: none;
       z-index: 2;
@@ -145,45 +148,54 @@
       position: absolute;
       left: 0;
       bottom: 0;
-      width: 200%;
-      height: 100%;
-      background-image:
-        radial-gradient(circle at 44px 36px, #2e9d43 0 28px, transparent 29px),
-        radial-gradient(circle at 72px 44px, #43b95a 0 34px, transparent 35px),
-        linear-gradient(#8d5a2b 0 0),
-        radial-gradient(circle at 238px 48px, #2e9d43 0 30px, transparent 31px),
-        radial-gradient(circle at 270px 38px, #55c96a 0 36px, transparent 37px),
-        linear-gradient(#8d5a2b 0 0),
-        radial-gradient(circle at 438px 42px, #2e9d43 0 29px, transparent 30px),
-        radial-gradient(circle at 466px 50px, #43b95a 0 35px, transparent 36px),
-        linear-gradient(#8d5a2b 0 0);
-      background-size:
-        520px 150px,
-        520px 150px,
-        520px 150px,
-        520px 150px,
-        520px 150px,
-        520px 150px,
-        520px 150px,
-        520px 150px,
-        520px 150px;
-      background-position:
-        0 0,
-        0 0,
-        56px 76px,
-        0 0,
-        0 0,
-        254px 78px,
-        0 0,
-        0 0,
-        452px 76px;
-      background-repeat: repeat-x;
-      animation: treesMove 5.2s linear infinite;
+      display: flex;
+      align-items: flex-end;
+      gap: 74px;
+      width: max-content;
+      padding-left: 100vw;
+      animation: forestMove 9.5s linear infinite;
+      will-change: transform;
     }
 
-    @keyframes treesMove {
+    @keyframes forestMove {
       from { transform: translateX(0); }
-      to { transform: translateX(-520px); }
+      to { transform: translateX(-1120px); }
+    }
+
+    .tree {
+      position: relative;
+      flex: 0 0 auto;
+      width: 76px;
+      height: var(--h, 130px);
+      transform: scale(var(--s, 1));
+      transform-origin: center bottom;
+    }
+
+    .tree::before {
+      content: "";
+      position: absolute;
+      left: 31px;
+      bottom: 0;
+      width: 16px;
+      height: 58px;
+      border-radius: 8px;
+      background: #8d5a2b;
+    }
+
+    .tree::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      bottom: 42px;
+      width: 86px;
+      height: 86px;
+      transform: translateX(-50%);
+      border-radius: 50%;
+      background:
+        radial-gradient(circle at 30% 45%, #2e9d43 0 30px, transparent 31px),
+        radial-gradient(circle at 66% 38%, #55c96a 0 34px, transparent 35px),
+        radial-gradient(circle at 50% 24%, #43b95a 0 31px, transparent 32px),
+        radial-gradient(circle at 50% 55%, #2e9d43 0 43px, transparent 44px);
     }
 
     .road {
@@ -196,6 +208,7 @@
       background: #565656;
       border-top: 13px solid #329f43;
       box-shadow: inset 0 16px 0 rgba(255,255,255,0.06);
+      z-index: 3;
     }
 
     .road-line {
@@ -215,7 +228,7 @@
 
     .garage {
       position: absolute;
-      z-index: 8;
+      z-index: 12;
       left: 50%;
       bottom: calc(76px + env(safe-area-inset-bottom, 0px));
       width: min(78vw, 390px);
@@ -229,6 +242,7 @@
       cursor: pointer;
       touch-action: manipulation;
       animation: gentleDrive 4.2s ease-in-out infinite;
+      will-change: left;
     }
 
     @keyframes gentleDrive {
@@ -236,7 +250,23 @@
       50% { left: 64%; }
     }
 
-    .garage:active .vehicle {
+    .jump-layer {
+      position: relative;
+      width: 290px;
+      height: 170px;
+      transform-origin: center bottom;
+      will-change: transform;
+    }
+
+    .spin-layer {
+      position: relative;
+      width: 290px;
+      height: 170px;
+      transform-origin: center center;
+      will-change: transform;
+    }
+
+    .garage:active .spin-layer {
       transform: scale(0.92) rotate(-2deg);
     }
 
@@ -428,7 +458,7 @@
 
     .pop {
       position: absolute;
-      z-index: 20;
+      z-index: 30;
       pointer-events: none;
       font-size: 46px;
       font-weight: 1000;
@@ -447,7 +477,7 @@
     .star {
       position: absolute;
       pointer-events: none;
-      z-index: 19;
+      z-index: 29;
       width: 20px;
       height: 20px;
       background: var(--star-color);
@@ -462,7 +492,7 @@
 
     .bottom-buttons {
       position: absolute;
-      z-index: 12;
+      z-index: 22;
       left: 12px;
       right: 12px;
       bottom: calc(12px + env(safe-area-inset-bottom, 0px));
@@ -489,17 +519,26 @@
       transform: scale(0.94);
     }
 
-    .big-tap-zone {
-      position: absolute;
-      inset: 0;
-      z-index: 1;
-    }
-
     @media (max-width: 520px) {
+      .tree-lane {
+        bottom: 31dvh;
+        height: 145px;
+      }
+
+      .tree-track {
+        gap: 56px;
+        animation-duration: 8.5s;
+      }
+
+      .tree {
+        transform: scale(calc(var(--s, 1) * 0.82));
+      }
+
+      .jump-layer,
+      .spin-layer,
       .vehicle {
         width: 245px;
         height: 150px;
-        transform: scale(0.92);
       }
 
       .garage {
@@ -507,9 +546,13 @@
         height: 205px;
       }
 
+      .vehicle {
+        transform: scale(0.92);
+      }
+
       .score-card { font-size: 20px; }
       .vehicle-card { font-size: 16px; }
-      .message { top: 72px; font-size: 16px; }
+      .message { top: calc(72px + env(safe-area-inset-top, 0px)); font-size: 16px; }
       .pop { font-size: 39px; }
       .toy-button { font-size: 16px; padding: 12px 14px; }
     }
@@ -530,7 +573,24 @@
     <div class="message" id="message">큰 자동차를 눌러봐!</div>
 
     <div class="tree-lane">
-      <div class="tree-track"></div>
+      <div class="tree-track" aria-hidden="true">
+        <div class="tree" style="--s:1.05"></div>
+        <div class="tree" style="--s:.78"></div>
+        <div class="tree" style="--s:1.18"></div>
+        <div class="tree" style="--s:.9"></div>
+        <div class="tree" style="--s:1.02"></div>
+        <div class="tree" style="--s:.7"></div>
+        <div class="tree" style="--s:1.22"></div>
+        <div class="tree" style="--s:.84"></div>
+        <div class="tree" style="--s:1.1"></div>
+        <div class="tree" style="--s:.76"></div>
+        <div class="tree" style="--s:1.16"></div>
+        <div class="tree" style="--s:.88"></div>
+        <div class="tree" style="--s:1.04"></div>
+        <div class="tree" style="--s:.72"></div>
+        <div class="tree" style="--s:1.2"></div>
+        <div class="tree" style="--s:.82"></div>
+      </div>
     </div>
 
     <div class="road">
@@ -538,19 +598,23 @@
     </div>
 
     <button class="garage" id="garage" aria-label="자동차 누르기">
-      <div class="vehicle car" id="vehicle" style="--car-main:#ff5252; --car-sub:#ff7043; --car-dark:#c62828;">
-        <div class="box"></div>
-        <div class="siren"></div>
-        <div class="ladder"></div>
-        <div class="top"></div>
-        <div class="window left"></div>
-        <div class="window right"></div>
-        <div class="window extra"></div>
-        <div class="body"></div>
-        <div class="light back"></div>
-        <div class="light front"></div>
-        <div class="wheel left"></div>
-        <div class="wheel right"></div>
+      <div class="jump-layer" id="jumpLayer">
+        <div class="spin-layer" id="spinLayer">
+          <div class="vehicle car" id="vehicle" style="--car-main:#ff5252; --car-sub:#ff7043; --car-dark:#c62828;">
+            <div class="box"></div>
+            <div class="siren"></div>
+            <div class="ladder"></div>
+            <div class="top"></div>
+            <div class="window left"></div>
+            <div class="window right"></div>
+            <div class="window extra"></div>
+            <div class="body"></div>
+            <div class="light back"></div>
+            <div class="light front"></div>
+            <div class="wheel left"></div>
+            <div class="wheel right"></div>
+          </div>
+        </div>
       </div>
     </button>
 
@@ -563,6 +627,8 @@
   <script>
     const game = document.getElementById('game');
     const garage = document.getElementById('garage');
+    const jumpLayer = document.getElementById('jumpLayer');
+    const spinLayer = document.getElementById('spinLayer');
     const vehicle = document.getElementById('vehicle');
     const scoreEl = document.getElementById('score');
     const messageEl = document.getElementById('message');
@@ -572,58 +638,14 @@
 
     let score = 0;
     let currentIndex = 0;
+    let jumping = false;
 
     const vehicles = [
-      {
-        type: 'car',
-        name: '🚗 빨간 자동차',
-        main: '#ff5252',
-        sub: '#ff7043',
-        dark: '#c62828',
-        sound: '빵빵!',
-        freq1: 360,
-        freq2: 280
-      },
-      {
-        type: 'bus',
-        name: '🚌 노란 버스',
-        main: '#ffd54f',
-        sub: '#ffca28',
-        dark: '#f57f17',
-        sound: '빵빵!',
-        freq1: 260,
-        freq2: 210
-      },
-      {
-        type: 'police',
-        name: '🚓 경찰차',
-        main: '#ffffff',
-        sub: '#64b5f6',
-        dark: '#1565c0',
-        sound: '삐용!',
-        freq1: 520,
-        freq2: 760
-      },
-      {
-        type: 'fire',
-        name: '🚒 소방차',
-        main: '#f44336',
-        sub: '#e53935',
-        dark: '#b71c1c',
-        sound: '애앵!',
-        freq1: 440,
-        freq2: 620
-      },
-      {
-        type: 'truck',
-        name: '🚚 트럭',
-        main: '#8d6e63',
-        sub: '#a1887f',
-        dark: '#4e342e',
-        sound: '부웅!',
-        freq1: 180,
-        freq2: 130
-      }
+      { type: 'car', name: '🚗 빨간 자동차', main: '#ff5252', sub: '#ff7043', dark: '#c62828', sound: '빵빵!', freq1: 360, freq2: 280 },
+      { type: 'bus', name: '🚌 노란 버스', main: '#ffd54f', sub: '#ffca28', dark: '#f57f17', sound: '빵빵!', freq1: 260, freq2: 210 },
+      { type: 'police', name: '🚓 경찰차', main: '#ffffff', sub: '#64b5f6', dark: '#1565c0', sound: '삐용!', freq1: 520, freq2: 760 },
+      { type: 'fire', name: '🚒 소방차', main: '#f44336', sub: '#e53935', dark: '#b71c1c', sound: '애앵!', freq1: 440, freq2: 620 },
+      { type: 'truck', name: '🚚 트럭', main: '#8d6e63', sub: '#a1887f', dark: '#4e342e', sound: '부웅!', freq1: 180, freq2: 130 }
     ];
 
     const messages = [
@@ -693,33 +715,50 @@
     }
 
     function bounceVehicle() {
-      vehicle.animate([
+      spinLayer.animate([
         { transform: 'scale(1) rotate(0deg)' },
-        { transform: 'scale(1.18) rotate(-4deg)' },
-        { transform: 'scale(1.04) rotate(4deg)' },
+        { transform: 'scale(1.16) rotate(-4deg)' },
+        { transform: 'scale(1.03) rotate(4deg)' },
         { transform: 'scale(1) rotate(0deg)' }
       ], {
-        duration: 380,
+        duration: 360,
         easing: 'ease-out'
       });
     }
 
     function randomJump() {
-      vehicle.animate([
-        { transform: 'translateY(0) rotate(0deg)' },
-        { transform: 'translateY(-72px) rotate(90deg)' },
-        { transform: 'translateY(-92px) rotate(180deg)' },
-        { transform: 'translateY(-72px) rotate(270deg)' },
-        { transform: 'translateY(0) rotate(360deg)' },
-        { transform: 'translateY(-12px) rotate(360deg)' },
-        { transform: 'translateY(0) rotate(360deg)' }
+      if (jumping) return;
+      jumping = true;
+
+      const jumpAnimation = jumpLayer.animate([
+        { transform: 'translateY(0)' },
+        { transform: 'translateY(-78px)' },
+        { transform: 'translateY(-98px)' },
+        { transform: 'translateY(-78px)' },
+        { transform: 'translateY(0)' },
+        { transform: 'translateY(-10px)' },
+        { transform: 'translateY(0)' }
       ], {
-        duration: 920,
-        easing: 'cubic-bezier(.2,.9,.25,1)'
+        duration: 980,
+        easing: 'cubic-bezier(.2,.85,.25,1)'
+      });
+
+      spinLayer.animate([
+        { transform: 'rotate(0deg)' },
+        { transform: 'rotate(110deg)' },
+        { transform: 'rotate(220deg)' },
+        { transform: 'rotate(360deg)' }
+      ], {
+        duration: 760,
+        easing: 'ease-in-out'
       });
 
       const rect = garage.getBoundingClientRect();
-      makePop(rect.left + rect.width / 2, rect.top + 60, '빙글!');
+      makePop(rect.left + rect.width / 2, rect.top + 58, '빙글!');
+
+      jumpAnimation.onfinish = () => {
+        jumping = false;
+      };
     }
 
     function scheduleRandomJump() {
@@ -775,16 +814,17 @@
     function nextVehicle() {
       currentIndex = (currentIndex + 1) % vehicles.length;
       setVehicle(currentIndex);
-    scheduleRandomJump();
       const rect = garage.getBoundingClientRect();
       makePop(rect.left + rect.width / 2, rect.top + 55, '짜잔!');
     }
 
     garage.addEventListener('click', celebrate);
+
     document.querySelectorAll('.cloud').forEach(cloud => {
       cloud.addEventListener('click', cloudBonus);
       cloud.addEventListener('touchstart', cloudBonus, { passive: true });
     });
+
     changeButton.addEventListener('click', nextVehicle);
 
     resetButton.addEventListener('click', () => {
@@ -796,6 +836,7 @@
     });
 
     setVehicle(currentIndex);
+    scheduleRandomJump();
   </script>
 </body>
 </html>
