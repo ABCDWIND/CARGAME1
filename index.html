@@ -130,6 +130,62 @@
       color: #37474f;
     }
 
+    .tree-lane {
+      position: absolute;
+      left: 0;
+      bottom: 33dvh;
+      width: 100%;
+      height: 150px;
+      overflow: hidden;
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    .tree-track {
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      width: 200%;
+      height: 100%;
+      background-image:
+        radial-gradient(circle at 44px 36px, #2e9d43 0 28px, transparent 29px),
+        radial-gradient(circle at 72px 44px, #43b95a 0 34px, transparent 35px),
+        linear-gradient(#8d5a2b 0 0),
+        radial-gradient(circle at 238px 48px, #2e9d43 0 30px, transparent 31px),
+        radial-gradient(circle at 270px 38px, #55c96a 0 36px, transparent 37px),
+        linear-gradient(#8d5a2b 0 0),
+        radial-gradient(circle at 438px 42px, #2e9d43 0 29px, transparent 30px),
+        radial-gradient(circle at 466px 50px, #43b95a 0 35px, transparent 36px),
+        linear-gradient(#8d5a2b 0 0);
+      background-size:
+        520px 150px,
+        520px 150px,
+        520px 150px,
+        520px 150px,
+        520px 150px,
+        520px 150px,
+        520px 150px,
+        520px 150px,
+        520px 150px;
+      background-position:
+        0 0,
+        0 0,
+        56px 76px,
+        0 0,
+        0 0,
+        254px 78px,
+        0 0,
+        0 0,
+        452px 76px;
+      background-repeat: repeat-x;
+      animation: treesMove 5.2s linear infinite;
+    }
+
+    @keyframes treesMove {
+      from { transform: translateX(0); }
+      to { transform: translateX(-520px); }
+    }
+
     .road {
       position: absolute;
       left: 0;
@@ -473,6 +529,10 @@
 
     <div class="message" id="message">큰 자동차를 눌러봐!</div>
 
+    <div class="tree-lane">
+      <div class="tree-track"></div>
+    </div>
+
     <div class="road">
       <div class="road-line"></div>
     </div>
@@ -647,17 +707,19 @@
     function randomJump() {
       vehicle.animate([
         { transform: 'translateY(0) rotate(0deg)' },
-        { transform: 'translateY(-58px) rotate(-4deg)' },
-        { transform: 'translateY(0) rotate(2deg)' },
-        { transform: 'translateY(-14px) rotate(-1deg)' },
-        { transform: 'translateY(0) rotate(0deg)' }
+        { transform: 'translateY(-72px) rotate(90deg)' },
+        { transform: 'translateY(-92px) rotate(180deg)' },
+        { transform: 'translateY(-72px) rotate(270deg)' },
+        { transform: 'translateY(0) rotate(360deg)' },
+        { transform: 'translateY(-12px) rotate(360deg)' },
+        { transform: 'translateY(0) rotate(360deg)' }
       ], {
-        duration: 720,
+        duration: 920,
         easing: 'cubic-bezier(.2,.9,.25,1)'
       });
 
       const rect = garage.getBoundingClientRect();
-      makePop(rect.left + rect.width / 2, rect.top + 60, '폴짝!');
+      makePop(rect.left + rect.width / 2, rect.top + 60, '빙글!');
     }
 
     function scheduleRandomJump() {
