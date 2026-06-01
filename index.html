@@ -779,13 +779,6 @@
     @media (orientation: landscape) and (max-height: 520px) {
 
 
-@media (orientation: landscape) and (max-height: 520px) {
-
-        .vehicle .wheel.left { left: 36px; }
-        .vehicle .wheel.right { right: 18px; }
-        .vehicle .light.front { right: 2px; }
-      }
-
 
       .game {
         height: 100dvh;
@@ -896,7 +889,8 @@
       }
 
       .spin-layer {
-        scale: 0.68;
+        transform: scale(0.68);
+        transform-origin: center center;
       }
 
       @keyframes gentleDrive {
