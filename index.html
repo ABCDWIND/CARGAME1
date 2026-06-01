@@ -53,6 +53,8 @@
       background: white;
       opacity: 0.92;
       animation: cloudMove linear infinite;
+      cursor: pointer;
+      pointer-events: auto;
     }
 
     .cloud::before,
@@ -244,7 +246,7 @@
       z-index: 3;
     }
 
-    .vehicle .light.front { right: 16px; }
+    .vehicle .light.front { right: 5px; }
     .vehicle .light.back { left: 20px; background: #ffcdd2; }
 
     .vehicle .wheel {
@@ -268,7 +270,7 @@
     }
 
     .vehicle .wheel.left { left: 54px; }
-    .vehicle .wheel.right { right: 54px; }
+    .vehicle .wheel.right { right: 30px; }
 
     @keyframes wheelSpin {
       from { transform: rotate(0deg); }
@@ -460,9 +462,9 @@
 <body>
   <main class="game" id="game">
     <div class="sky-shine"></div>
-    <div class="cloud one"></div>
-    <div class="cloud two"></div>
-    <div class="cloud three"></div>
+    <div class="cloud one" aria-label="보너스 구름"></div>
+    <div class="cloud two" aria-label="보너스 구름"></div>
+    <div class="cloud three" aria-label="보너스 구름"></div>
 
     <section class="top-ui">
       <div class="score-card">⭐ <span id="score">0</span></div>
@@ -662,6 +664,28 @@
       }
     }
 
+    function cloudBonus(event) {
+      event.stopPropagation();
+      const rect = event.currentTarget.getBoundingClientRect();
+      const x = rect.left + rect.width / 2;
+      const y = rect.top + rect.height / 2;
+
+      score += 5;
+      scoreEl.textContent = score;
+      messageEl.textContent = '구름 보너스! +5점!';
+      makePop(x, y, '+5점!');
+      makeStars(x, y);
+
+      event.currentTarget.animate([
+        { transform: 'scale(1)', opacity: 0.92 },
+        { transform: 'scale(1.25)', opacity: 1 },
+        { transform: 'scale(1)', opacity: 0.92 }
+      ], {
+        duration: 360,
+        easing: 'ease-out'
+      });
+    }
+
     function nextVehicle() {
       currentIndex = (currentIndex + 1) % vehicles.length;
       setVehicle(currentIndex);
@@ -670,6 +694,10 @@
     }
 
     garage.addEventListener('click', celebrate);
+    document.querySelectorAll('.cloud').forEach(cloud => {
+      cloud.addEventListener('click', cloudBonus);
+      cloud.addEventListener('touchstart', cloudBonus, { passive: true });
+    });
     changeButton.addEventListener('click', nextVehicle);
 
     resetButton.addEventListener('click', () => {
