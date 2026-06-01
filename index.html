@@ -644,6 +644,30 @@
       });
     }
 
+    function randomJump() {
+      vehicle.animate([
+        { transform: 'translateY(0) rotate(0deg)' },
+        { transform: 'translateY(-58px) rotate(-4deg)' },
+        { transform: 'translateY(0) rotate(2deg)' },
+        { transform: 'translateY(-14px) rotate(-1deg)' },
+        { transform: 'translateY(0) rotate(0deg)' }
+      ], {
+        duration: 720,
+        easing: 'cubic-bezier(.2,.9,.25,1)'
+      });
+
+      const rect = garage.getBoundingClientRect();
+      makePop(rect.left + rect.width / 2, rect.top + 60, '폴짝!');
+    }
+
+    function scheduleRandomJump() {
+      const delay = 2500 + Math.random() * 4200;
+      setTimeout(() => {
+        randomJump();
+        scheduleRandomJump();
+      }, delay);
+    }
+
     function celebrate() {
       const item = vehicles[currentIndex];
       const rect = garage.getBoundingClientRect();
@@ -689,6 +713,7 @@
     function nextVehicle() {
       currentIndex = (currentIndex + 1) % vehicles.length;
       setVehicle(currentIndex);
+    scheduleRandomJump();
       const rect = garage.getBoundingClientRect();
       makePop(rect.left + rect.width / 2, rect.top + 55, '짜잔!');
     }
