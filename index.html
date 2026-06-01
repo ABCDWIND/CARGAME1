@@ -173,9 +173,6 @@
       pointer-events: auto;
     }
 
-    .tree::before     pointer-events: auto;
-    }
-
     .tree::before {
       content: "";
       position: absolute;
@@ -568,7 +565,10 @@
     <div class="sky-shine"></div>
     <div class="cloud one" aria-label="보너스 구름"></div>
     <div class="cloud two" aria-label="보너스 구름"></div>
-    <div class="cloud three" aria-label="<div class="score-card"><span id="stars">⭐</span> <span id="score">0</span></div>lass="score-card"><span id="stars">⭐</span> <span id="score">0</span></div>
+    <div class="cloud three" aria-label="보너스 구름"></div>
+
+    <section class="top-ui">
+      <div class="score-card"><span id="stars">⭐</span> <span id="score">0</span></div>
       <div class="vehicle-card" id="vehicleName">🚗 자동차</div>
     </section>
 
@@ -698,13 +698,8 @@
       pop.textContent = text;
       pop.style.left = x + 'px';
       pop.style.top = y + 'px';
-      gafunction updateScoreDisplay() {
-      scoreEl.textContent = score;
-      const starCount = Math.floor(score / 100) + 1;
-      document.getElementById('stars').textContent = '⭐'.repeat(starCount);
-    }
-
-    function makeStars(x, y)   setTimeout(() => pop.remove(), 850);
+      game.appendChild(pop);
+      setTimeout(() => pop.remove(), 850);
     }
 
     function updateScoreDisplay() {
@@ -778,7 +773,8 @@
       const delay = 2500 + Math.random() * 4200;
       setTimeout(() => {
         randomJump();
-      updateScoreDisplay();  }, delay);
+        scheduleRandomJump();
+      }, delay);
     }
 
     function celebrate() {
@@ -788,7 +784,20 @@
       const y = rect.top + rect.height / 2;
 
       score += 1;
-      updateScoreDisfunction cloudBonus(event) {
+      updateScoreDisplay();
+      messageEl.textContent = messages[score % messages.length];
+
+      playTone(item);
+      makePop(x, y, item.sound);
+      makeStars(x, y);
+      bounceVehicle();
+
+      if (score > 0 && score % 5 === 0) {
+        setTimeout(nextVehicle, 320);
+      }
+    }
+
+    function cloudBonus(event) {
       event.stopPropagation();
       const rect = event.currentTarget.getBoundingClientRect();
       const x = rect.left + rect.width / 2;
@@ -833,40 +842,8 @@
       });
     }
 
-    function nextVehicle()imate([
-        { transform: 'scale(1)', opacity: 0.92 },
-        { transform: 'scale(1.25)', opacity: 1 },
-        { transform: 'scale(1)', opacity: 0.92 }
-      ], {
-        duration: 360,
-        easing: 'ease-out'
-      });
-    }
-
-    function treeBonus(event)document.querySelectorAll('.cloud').forEach(cloud => {
-      cloud.addEventListener('click', cloudBonus);
-      cloud.addEventListener('touchstart', cloudBonus, { passive: true });
-    });
-
-    document.querySelectorAll('.tree').forEach(tree => {
-      tree.addEventListener('click', treeBonus);
-      tree.addEventListener('touchstart', treeBonus, { passive: true });
-    });     score += 3;
-      updateScoreDisplay();
-      messageEl.textContent = '나무 보너스! +3점!';
-      makePop(x, y, '+3점!');
-      makeStaupdateScoreDisplay();ntTarget.animate([
-        { transform: 'scale(var(--s, 1)) rotate(0deg)' },
-        { transform: 'scale(calc(var(--s, 1) * 1.18)) rotate(-setVehicle(currentIndex);
-    updateScoreDisplay();
-    scheduleRandomJump();rotate(4deg)' }
-      ], {
-        duration: 360,
-        easing: 'ease-out'
-      });
-    }
-
-    function nextVehicle()  currentIndex = (currentIndex + 1) % vehicles.length;
+    function nextVehicle() {
+      currentIndex = (currentIndex + 1) % vehicles.length;
       setVehicle(currentIndex);
       const rect = garage.getBoundingClientRect();
       makePop(rect.left + rect.width / 2, rect.top + 55, '짜잔!');
@@ -876,7 +853,13 @@
 
     document.querySelectorAll('.cloud').forEach(cloud => {
       cloud.addEventListener('click', cloudBonus);
-      cloud.addEventListener('touchstart', cloudBonus, { pass
+      cloud.addEventListener('touchstart', cloudBonus, { passive: true });
+    });
+
+    document.querySelectorAll('.tree').forEach(tree => {
+      tree.addEventListener('click', treeBonus);
+      tree.addEventListener('touchstart', treeBonus, { passive: true });
+    });
 
     changeButton.addEventListener('click', nextVehicle);
 
@@ -889,6 +872,7 @@
     });
 
     setVehicle(currentIndex);
+    updateScoreDisplay();
     scheduleRandomJump();
   </script>
 </body>
