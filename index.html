@@ -774,6 +774,159 @@
       .pop { font-size: 39px; }
       .toy-button { font-size: 16px; padding: 12px 14px; }
     }
+
+    /* iPhone/iPad 가로모드 전용 보정 */
+    @media (orientation: landscape) and (max-height: 520px) {
+      .game {
+        height: 100dvh;
+        min-height: 100dvh;
+      }
+
+      .top-ui {
+        top: calc(8px + env(safe-area-inset-top, 0px));
+        left: calc(10px + env(safe-area-inset-left, 0px));
+        right: calc(10px + env(safe-area-inset-right, 0px));
+      }
+
+      .score-card,
+      .vehicle-card {
+        padding: 8px 12px;
+        border-radius: 18px;
+      }
+
+      .score-card { font-size: 17px; }
+      .vehicle-card { font-size: 14px; }
+
+      .message {
+        top: calc(50px + env(safe-area-inset-top, 0px));
+        left: calc(10px + env(safe-area-inset-left, 0px));
+        max-width: 260px;
+        padding: 7px 11px;
+        border-radius: 16px;
+        font-size: 13px;
+      }
+
+      .cloud {
+        width: 112px;
+        height: 40px;
+      }
+
+      .cloud::before {
+        width: 48px;
+        height: 48px;
+        left: 18px;
+        top: -22px;
+      }
+
+      .cloud::after {
+        width: 58px;
+        height: 58px;
+        right: 15px;
+        top: -29px;
+      }
+
+      .cloud.one { top: 62px; }
+      .cloud.two { top: 112px; }
+      .cloud.three { top: 34px; }
+
+      .tree-lane {
+        bottom: 27dvh;
+        height: 105px;
+      }
+
+      .tree-track {
+        animation-duration: 8.2s;
+      }
+
+      .tree-group {
+        gap: 34px;
+        padding-right: 34px;
+      }
+
+      .tree {
+        width: 54px;
+        height: 92px;
+        scale: 0.72;
+      }
+
+      .tree::before {
+        left: 22px;
+        width: 12px;
+        height: 42px;
+      }
+
+      .tree::after {
+        bottom: 30px;
+        width: 64px;
+        height: 64px;
+      }
+
+      .road {
+        height: 28dvh;
+        min-height: 105px;
+        border-top-width: 8px;
+      }
+
+      .road-line {
+        height: 9px;
+        top: 47%;
+        background: repeating-linear-gradient(90deg, #fff 0 52px, transparent 52px 92px);
+      }
+
+      .garage {
+        bottom: calc(34px + env(safe-area-inset-bottom, 0px));
+        height: 150px;
+        width: min(46vw, 300px);
+      }
+
+      .jump-layer,
+      .spin-layer {
+        width: 290px;
+        height: 170px;
+      }
+
+      .spin-layer {
+        scale: 0.68;
+      }
+
+      @keyframes gentleDrive {
+        0%, 100% { left: 40%; }
+        50% { left: 60%; }
+      }
+
+      @keyframes bigJump {
+        0% { transform: translateY(0); }
+        18% { transform: translateY(-42px); }
+        42% { transform: translateY(-82px); }
+        65% { transform: translateY(-42px); }
+        82% { transform: translateY(0); }
+        91% { transform: translateY(-10px); }
+        100% { transform: translateY(0); }
+      }
+
+      .bottom-buttons {
+        left: calc(10px + env(safe-area-inset-left, 0px));
+        right: calc(10px + env(safe-area-inset-right, 0px));
+        bottom: calc(8px + env(safe-area-inset-bottom, 0px));
+      }
+
+      .toy-button {
+        padding: 8px 12px;
+        font-size: 13px;
+      }
+
+      .plane {
+        scale: 0.76;
+      }
+
+      .ufo {
+        scale: 0.78;
+      }
+
+      .pop {
+        font-size: 30px;
+      }
+    }
   </style>
 </head>
 <body>
@@ -1258,20 +1411,8 @@
       requestAnimationFrame(moveUfo);
     }
 
-    function scheduleUfo() {
-      const delay = 10000 + Math.random() * 10000;
-
-      setTimeout(() => {
-        spawnUfo();
-        scheduleUfo();
-      }, delay);
-    }
-
     function startUfos() {
-      setTimeout(() => {
-        spawnUfo();
-        scheduleUfo();
-      }, 7000);
+      setInterval(spawnUfo, 30000);
     }
 
     function nextVehicle() {
